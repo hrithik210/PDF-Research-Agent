@@ -4,14 +4,14 @@ from langchain.embeddings import FakeEmbeddings
 from langchain.vectorstores import FAISS
 import os
 from dotenv import load_dotenv
-from langchain_anthropic import ChatAnthropic
+from langchain_groq import ChatGroq
 
 from langchain import hub
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from langchain.prompts import ChatPromptTemplate
 
-
+load_dotenv()
 
 loader = PyPDFLoader('Holiday Calendar-25.pdf')
 splitter = RecursiveCharacterTextSplitter(
@@ -34,13 +34,12 @@ print(f"📦 FAISS vector store created with {db.index.ntotal} chunks.")
 
 
 #initializing llm
-llm = ChatAnthropic(
-                model_name="claude-3-haiku-20240307",
-                temperature=0,
-                timeout=None,
-                max_retries=2,
-                stop=None,
-            )
+llm = ChatGroq(
+    model="llama-3.1-8b-instant",
+    temperature=0.0,
+    max_retries=2,
+    # other params...
+)
 
 
 def format_docs(docs):
@@ -62,9 +61,13 @@ retriever = db.as_retriever()
 qa_chain = (
     {
         "context": retriever | format_docs,
-        "question": RunnablePassthrough(),
+        "input": RunnablePassthrough(),
     }
     | prompt
     | llm
     | StrOutputParser()
 )
+
+
+
+print(qa_chain.invoke("What is the holiday calendar for 2025?"))
