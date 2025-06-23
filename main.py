@@ -16,6 +16,9 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 
 load_dotenv()
 
+
+session_id = "session-001"
+
 loader = PyPDFLoader('Holiday Calendar-25.pdf')
 splitter = RecursiveCharacterTextSplitter(
   chunk_size = 100,
@@ -73,9 +76,6 @@ qa_chain = (
 
 
 
-print(qa_chain.invoke("What is the holiday calendar for 2025?"))
-
-
 #chat history
 def get_session_history(session_id : str):
     return ChatMessageHistory()
@@ -88,3 +88,15 @@ qa_chain_with_memory = RunnableWithMessageHistory(
     input_messages_key="input",
     history_messages_key="history"
 )
+
+while True:
+    user_input = input("\n🤔 Ask something about the PDF (or type 'exit'): ")
+    if user_input.lower() in ["exit", "quit"]:
+        break
+
+    result = qa_chain_with_memory.invoke(
+        {"input": user_input},
+        config=RunnableConfig(configurable={"session_id": session_id})
+    )
+
+    print("\n🧠 Answer:\n", result)
