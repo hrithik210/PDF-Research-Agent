@@ -8,8 +8,11 @@ from langchain_groq import ChatGroq
 
 from langchain import hub
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough
+from langchain_core.runnables import RunnablePassthrough, RunnableConfig 
 from langchain.prompts import ChatPromptTemplate
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory
+
 
 load_dotenv()
 
@@ -71,3 +74,17 @@ qa_chain = (
 
 
 print(qa_chain.invoke("What is the holiday calendar for 2025?"))
+
+
+#chat history
+def get_session_history(session_id : str):
+    return ChatMessageHistory()
+
+
+#qa chain with memory
+qa_chain_with_memory = RunnableWithMessageHistory(
+    qa_chain,
+    get_session_history,
+    input_messages_key="input",
+    history_messages_key="history"
+)
