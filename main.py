@@ -1,6 +1,6 @@
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import FakeEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 import os
 from dotenv import load_dotenv
@@ -33,7 +33,10 @@ print("docs : " , docs)
 
 
 #Emeddings
-embeddings = FakeEmbeddings(size = 1536)
+embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2",
+        model_kwargs={'device': 'cpu'}
+    )
 
 db = FAISS.from_documents(docs, embeddings)
 print(f"📦 FAISS vector store created with {db.index.ntotal} chunks.")
