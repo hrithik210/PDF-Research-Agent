@@ -1,6 +1,6 @@
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 import os
 from dotenv import load_dotenv
@@ -70,7 +70,7 @@ retriever = db.as_retriever()
 
 qa_chain = (
     {
-        "context": retriever | format_docs,
+        "context": (lambda x: x["input"]) |retriever | format_docs,
         "input": RunnablePassthrough(),
     }
     | prompt
