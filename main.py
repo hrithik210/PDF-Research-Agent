@@ -21,8 +21,9 @@ session_id = "session-001"
 
 loader = PyPDFLoader('Holiday Calendar-25.pdf')
 splitter = RecursiveCharacterTextSplitter(
-  chunk_size = 100,
-  chunk_overlap = 50,
+  chunk_size = 1000,
+  chunk_overlap = 200,
+  separators=["\n\n", "\n", " ", ""]
 )
 
 pages = loader.load()
